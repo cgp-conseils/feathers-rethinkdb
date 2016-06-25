@@ -31,6 +31,12 @@ export default function parseQuery(service, reQuery, params) {
             return service.options.r.expr(qValue.$nin).contains(doc(qField)).not();
           });
           break;
+        case '$filter':
+          isFilter = true;
+          reQuery = reQuery.filter(function(doc) { 
+            return qValue.$filter(doc, qField);
+          });
+          break;
         case '$search': 
           isFilter = true; 
           reQuery = reQuery.filter(function(doc) { 
