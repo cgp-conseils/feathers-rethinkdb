@@ -48,21 +48,6 @@ class Service {
     // Prepare the special query params.
     let { filters, query } = filter(params.query || {}, paginate);
 
-    // Handle $select
-    if (filters.$select) {
-      q = q.pluck(filters.$select);
-    }
-
-    // Handle $sort
-    if (filters.$sort) {
-      let fieldName = Object.keys(filters.$sort)[0];
-      if (filters.$sort[fieldName] === 1) {
-        q = q.orderBy(fieldName);
-      } else {
-        q = q.orderBy(r.desc(fieldName));
-      }
-    }
-
     // Handle $or
     // TODO (@marshallswain): Handle $or queries with nested specials.
     // Right now they won't work and we'd need to start diving
@@ -109,6 +94,16 @@ class Service {
       countQuery = q.count().run();
     }
 
+    // Handle $sort
+    if (filters.$sort) {
+      let fieldName = Object.keys(filters.$sort)[0];
+      if (filters.$sort[fieldName] === 1) {
+        q = q.orderBy(fieldName);
+      } else {
+        q = q.orderBy(r.desc(fieldName));
+      }
+    }
+
     // Handle $skip AFTER the count query but BEFORE $limit.
     if (filters.$skip) {
       q = q.skip(filters.$skip);
@@ -116,6 +111,11 @@ class Service {
     // Handle $limit AFTER the count query and $skip.
     if (filters.$limit) {
       q = q.limit(filters.$limit);
+    }
+
+    // Handle $select
+    if (filters.$select) {
+      q = q.pluck(filters.$select);
     }
 
     // Execute the query
