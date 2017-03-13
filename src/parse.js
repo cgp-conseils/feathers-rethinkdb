@@ -41,7 +41,9 @@ export function createFilter (query, r) {
       } else {
         // Handle special parameters
         _.each(value, (selector, type) => {
-          if (type === '$in') {
+          if(type === '$filter') {
+            matcher = matcher.filter(selector);
+          } else if (type === '$in') {
             matcher = matcher.and(r.expr(selector).contains(doc(field)));
           } else if (type === '$nin') {
             matcher = matcher.and(
