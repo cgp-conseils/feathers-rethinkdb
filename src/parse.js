@@ -42,7 +42,7 @@ export function createFilter (query, r) {
         // Handle special parameters
         _.each(value, (selector, type) => {
           if(type === '$filter') {
-            matcher = matcher.filter(selector);
+            matcher = matcher.and(selector(doc));
           } else if (type === '$in') {
             matcher = matcher.and(r.expr(selector).contains(doc(field)));
           } else if (type === '$nin') {
