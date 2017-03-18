@@ -69,11 +69,22 @@ class Service {
     const { filters, query } = filter(originalQuery || {});
 
     let r = this.options.r;
-    let rq = this.table.filter(this.createFilter(query));
+    let rq = this.table;
+    if(query.id) {
+      const $in = query.id.$in;
+      rq = $in ? rq.getAll(...$in) : rq.get(query.id);
+      delete query.id;
+    }
+    rq = rq.filter(this.createFilter(query));
 
     // Handle $select
     if (filters.$select) {
       rq = rq.pluck(filters.$select);
+    }
+
+    // Handle $omit
+    if (filters.$omit) {
+      rq = rq.omit(filters.$omit);
     }
 
     // Handle $sort
@@ -141,6 +152,11 @@ class Service {
 
     if (params.query && params.query.$select) {
       query = query.pluck(params.query.$select.concat(this.id));
+    }
+
+    // Handle $omit
+    if (params.query && params.query.$omit) {
+      rq = rq.omit(params.query.$omit);
     }
 
     return query.run().then(data => {
