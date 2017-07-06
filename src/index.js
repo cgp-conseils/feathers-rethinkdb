@@ -91,7 +91,7 @@ class Service {
     if (filters.$sort) {
       _.each(filters.$sort, (order, fieldName) => {
         if (parseInt(order) === 1) {
-          rq = rq.orderBy(fieldName);
+          rq = rq.orderBy(row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ'));
         } else {
           rq = rq.orderBy(r.desc(fieldName));
         }
