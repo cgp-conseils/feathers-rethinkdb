@@ -84,7 +84,7 @@ class Service {
 
     // Handle $omit
     if (filters.$omit) {
-      rq = rq.omit(filters.$omit);
+      rq = rq.without(filters.$omit);
     }
 
     // Handle $sort
@@ -156,7 +156,7 @@ class Service {
 
     // Handle $omit
     if (params.query && params.query.$omit) {
-      query = query.omit(params.query.$omit);
+      query = query.without(params.query.$omit);
     }
 
     return query.run().then(data => {
