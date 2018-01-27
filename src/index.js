@@ -156,7 +156,7 @@ class Service {
 
     // Handle $omit
     if (params.query && params.query.$omit) {
-      rq = rq.omit(params.query.$omit);
+      query = query.omit(params.query.$omit);
     }
 
     return query.run().then(data => {
