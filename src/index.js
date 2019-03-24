@@ -89,13 +89,13 @@ class Service {
 
     // Handle $sort
     if (filters.$sort) {
-      _.each(filters.$sort, (order, fieldName) => {
-        if (parseInt(order) === 1) {
-          rq = rq.orderBy(row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ'));
-        } else {
-          rq = rq.orderBy(r.desc(fieldName));
-        }
-      });
+      const sorts = Object.entries(filters.$sort)
+        .map(
+          ([fieldName, order]) =>
+            parseInt(order) === 1
+            ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
+            : r.desc(fieldName));
+      rq = rq.orderBy(...sorts);
     }
 
     return rq;
