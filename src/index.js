@@ -69,12 +69,18 @@ class Service {
     const { filters, query } = filter(originalQuery || {});
 
     let r = this.options.r;
+
     let rq = this.table;
     if(query.id) {
       const $in = query.id.$in;
       rq = $in ? rq.getAll(...$in) : rq.get(query.id);
       delete query.id;
+    } else if (filters.$getAll) {
+      _.each(filters.$getAll, (values, fieldName) => {
+        rq = rq.getAll(r.args(values), { index: fieldName });
+      });
     }
+
     rq = rq.filter(this.createFilter(query));
 
     // Handle $select
@@ -96,6 +102,17 @@ class Service {
             ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
             : r.desc(fieldName));
       rq = rq.orderBy(...sorts);
+    }
+
+    // Handle $sortI
+    if (filters.$sortI) {
+      _.each(filters.$sortI, (order, fieldName) => {
+        if (parseInt(order) === 1) {
+          rq = rq.orderBy({ index: fieldName });
+        } else {
+          rq = rq.orderBy({ index: r.desc(fieldName) });
+        }
+      });
     }
 
     return rq;
