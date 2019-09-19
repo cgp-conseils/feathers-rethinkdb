@@ -71,16 +71,10 @@ class Service {
     let r = this.options.r;
 
     let rq = this.table;
-    if(query.id && !query.$index) {
+    if(query.id) {
       const $in = query.id.$in;
       rq = $in ? rq.getAll(...$in) : rq.get(query.id);
       delete query.id;
-    }
-    
-    if (query.$index) {
-      rq = rq.getAll(r.args(query[$index]), { index: query.$index });
-      delete query.$index;
-      delete query[$index];
     }
 
     rq = rq.filter(this.createFilter(query));
@@ -109,6 +103,8 @@ class Service {
       }
       rq = rq.orderBy(...sorts);
     }
+
+    return rq;
   }
 
   _find (params = {}) {
