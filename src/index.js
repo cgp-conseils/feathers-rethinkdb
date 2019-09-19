@@ -101,7 +101,7 @@ class Service {
             parseInt(order) === 1
             ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
             : r.desc(fieldName));
-      if (filters.$sortI) sorts.push({ index: 'filters.$sortI'})
+      if (filters.$sortI) sorts.push({ index: filters.$sortI})
       rq = rq.orderBy(...sorts);
     }
   }
