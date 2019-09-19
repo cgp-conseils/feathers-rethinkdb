@@ -101,21 +101,9 @@ class Service {
             parseInt(order) === 1
             ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
             : r.desc(fieldName));
+      if (filters.$sortI) sorts.push({ index: 'filters.$sortI'})
       rq = rq.orderBy(...sorts);
     }
-
-    // Handle $sortI
-    if (filters.$sortI) {
-      _.each(filters.$sortI, (order, fieldName) => {
-        if (parseInt(order) === 1) {
-          rq = rq.orderBy({ index: fieldName });
-        } else {
-          rq = rq.orderBy({ index: r.desc(fieldName) });
-        }
-      });
-    }
-
-    return rq;
   }
 
   _find (params = {}) {
