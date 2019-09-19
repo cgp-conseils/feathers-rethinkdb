@@ -77,6 +77,12 @@ class Service {
       delete query.id;
     }
 
+    let $sortI
+    if (query.$sortI) {
+      $sortI = query.$sortI
+      delete query.$sortI
+    } 
+
     rq = rq.filter(this.createFilter(query));
 
     // Handle $select
@@ -97,9 +103,8 @@ class Service {
             parseInt(order) === 1
             ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
             : r.desc(fieldName));
-      if (filters.$sortI) {
-        sorts.push({ index: filters.$sortI})
-        delete filters.$sortI
+      if ($sortI) {
+        sorts.push({ index: $sortI})
       }
       rq = rq.orderBy(...sorts);
     }
