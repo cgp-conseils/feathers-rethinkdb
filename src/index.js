@@ -71,17 +71,28 @@ class Service {
     let r = this.options.r;
 
     let rq = this.table;
+
     if(query.id) {
       const $in = query.id.$in;
       rq = $in ? rq.getAll(...$in) : rq.get(query.id);
       delete query.id;
     }
 
-    let $sortI
-    if (query.$sortI) {
-      $sortI = query.$sortI
+    // Handle $sort
+    if (filters.$sort && query.$sortI) {
+      if (!query.id) {
+        const sorts = Object.entries(filters.$sort)
+          .map(
+            ([fieldName, order]) =>
+              parseInt(order) === 1
+              ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
+              : r.desc(fieldName));
+        sorts.push({ index: $sortI})
+        rq = rq.orderBy(...sorts);
+        delete filters.$sort
+      }
       delete query.$sortI
-    } 
+    }
 
     rq = rq.filter(this.createFilter(query));
 
@@ -103,9 +114,6 @@ class Service {
             parseInt(order) === 1
             ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
             : r.desc(fieldName));
-      if ($sortI) {
-        sorts.push({ index: $sortI})
-      }
       rq = rq.orderBy(...sorts);
     }
 
