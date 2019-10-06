@@ -74,7 +74,8 @@ class Service {
 
     if(query.id) {
       const $in = query.id.$in;
-      rq = $in ? rq.getAll(...$in) : rq.get(query.id);
+      const index = query.id.$index;
+      rq = $in ? rq.getAll(...$in, ...index ? [{index}] : []) : rq.get(query.id);
       delete query.id;
     }
 
