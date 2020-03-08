@@ -80,19 +80,13 @@ class Service {
     }
 
     // Handle $sort
-    if (filters.$sort && query.$sortI) {
+    if (query.$sortI) {
       if (!query.id) {
-        const sorts = Object.entries(filters.$sort)
-          .map(
-            ([fieldName, order]) =>
-              parseInt(order) === 1
-              ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
-              : r.desc(fieldName));
-        sorts.push({ index: query.$sortI})
-        rq = rq.orderBy(...sorts);
-        delete filters.$sort
+        const [fieldName, order] = Object.entries(query.$sortI)[0]
+        rq = rq.orderBy({ index: parseInt(order) === 1 ? fieldName : r.desc(fieldName) });
       }
-      delete query.$sortI
+      delete filters.$sort;
+      delete query.$sortI;
     }
 
     rq = rq.filter(this.createFilter(query));
@@ -113,7 +107,7 @@ class Service {
         .map(
           ([fieldName, order]) =>
             parseInt(order) === 1
-            ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'ZZZZZ')
+            ? row => r.branch(row.hasFields(fieldName), row(fieldName), 'zzzzz')
             : r.desc(fieldName));
       rq = rq.orderBy(...sorts);
     }
