@@ -49,6 +49,8 @@ export function createFilter (query, r) {
             matcher = matcher.and(
               r.expr(selector).contains(doc(field)).not()
             );
+          } else if (type === '$intersects') {
+            matcher = matcher.and(doc(field).setIntersection(selector).count().gt(0));
           } else if (mappings[type]) {
             const method = mappings[type];
 
