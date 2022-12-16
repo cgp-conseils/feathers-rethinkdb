@@ -19,17 +19,17 @@ export function createFilter (query, r) {
     let matcher = r({});
 
     // Handle $or. If it exists, use the first $or entry as the base matcher
-    if (Array.isArray(or)) {
+    if (Array.isArray(or) && or.length) {
       matcher = createFilter(or[0], r)(doc);
 
-      for (let i = 0; i < or.length; i++) {
+      for (let i = 1; i < or.length; i++) {
         matcher = matcher.or(createFilter(or[i], r)(doc));
       }
     // Handle $and
-    } else if (Array.isArray(and)) {
+    } else if (Array.isArray(and) && and.length) {
       matcher = createFilter(and[0], r)(doc);
 
-      for (let i = 0; i < and.length; i++) {
+      for (let i = 1; i < and.length; i++) {
         matcher = matcher.and(createFilter(and[i], r)(doc));
       }
     }
